@@ -1,0 +1,2 @@
+= libpinkas-clj
+A Clojure library designed to support basic registry operations for microservices
