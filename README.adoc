@@ -35,19 +35,19 @@ image:https://img.shields.io/clojars/v/updcon/libpinkas-clj.svg[]
 (def ^:private path "http://localhost:8500/v1/catalog/")
 
 (def ^:private s1 (service path (schema "my-service-1" 8888)))
-(def ^:private 1s 1000)
+(def ^:private one-sec 1000)
 
 (defn run-my-service
   (let [status (register s1)]
 
     (when status
-      (<!! (timeout 1s)))
+      (<!! (timeout one-sec)))
 
     (assert (= (count (filter
-                      #(= "my-service-1" (get % :ServiceID))
-                      (discover s1))) 1)))
+                        #(= "my-service-1" (get % :ServiceID))
+                        (discover s1))) 1)))
   (deregister s1)
-  (<!! (timeout 1s)))
+  (<!! (timeout one-sec)))
 ----
 
 == Developing
