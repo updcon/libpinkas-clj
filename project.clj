@@ -1,4 +1,4 @@
-(defproject libpinkas-clj "0.0.1"
+(defproject updcon/libpinkas-clj "0.0.1"
   :description "A Clojure library designed to support registry operations for microservices"
   :url "https://github.com/updcon/libpinkas-clj"
   :license {:name "MIT"}

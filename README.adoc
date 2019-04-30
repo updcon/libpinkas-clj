@@ -1,2 +1,97 @@
 = libpinkas-clj
-A Clojure library designed to support basic registry operations for microservices
+
+A Clojure library designed to support basic registry operations
+for microservices with HashiCorp Consul service.
+
+Heavily inspired by clj-consul-catalog.
+
+image:https://img.shields.io/clojars/v/updcon/libpinkas-clj.svg[]
+
+== Usage
+
+.project.clj
+[source,clojure]
+----
+[updcon/libpinkas-clj "0.0.1"]
+----
+
+.example.clj
+[source, clojure]
+----
+(ns my-app.jasper
+  (:require [libpinkas-clj.core :refer :all]
+            [clojure.core.async :refer [timeout <!!] :include-macros true]))
+
+(defn- schema [id port]
+  {:node    "MYNODE-MACADDR"
+   :address "127.0.0.1"
+   :service {
+             :id      id
+             :service "my-service"
+             :address "127.0.0.1"
+             :port    port}
+   })
+
+(def ^:private path "http://localhost:8500/v1/catalog/")
+
+(def ^:private s1 (service path (schema "my-service-1" 8888)))
+(def ^:private 1s 1000)
+
+(defn run-my-service
+  (let [status (register s1)]
+
+    (when status
+      (<!! (timeout 1s)))
+
+    (assert (= (count (filter
+                      #(= "my-service-1" (get % :ServiceID))
+                      (discover s1))) 1)))
+  (deregister s1)
+  (<!! (timeout 1s)))
+----
+
+== Developing
+
+=== Consul
+
+[source, text]
+----
+==> Consul agent running!
+           Version: 'v1.4.4'
+           Node ID: '7b50bf01-8e4c-8536-759c-85477ae59855'
+        Datacenter: 'dc1' (Segment: '<all>')
+            Server: true (Bootstrap: false)
+       Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, gRPC: 8502, DNS: 8600)
+      Cluster Addr: 127.0.0.1 (LAN: 8301, WAN: 8302)
+           Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false
+----
+
+=== Self tests
+
+Run Consul
+
+[source, shell]
+----
+$ consul agent -dev
+----
+
+Run tests
+
+[source, shell]
+----
+$ cd /path/to/libpinkas-clj
+$ lein test
+
+lein test libpinkas-clj.core-test
+Ran 3 tests containing 9 assertions.
+0 failures, 0 errors.
+
+----
+
+Enjoy!
+
+== License
+
+Copyright &copy; 2019 UPD Consulting
+
+Distributed under the MIT License.
