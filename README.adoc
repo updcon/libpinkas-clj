@@ -12,7 +12,7 @@ image:https://img.shields.io/clojars/v/updcon/libpinkas-clj.svg[]
 .project.clj
 [source,clojure]
 ----
-[updcon/libpinkas-clj "0.0.1"]
+[updcon/libpinkas-clj "0.0.2"]
 ----
 
 .example.clj
@@ -23,30 +23,33 @@ image:https://img.shields.io/clojars/v/updcon/libpinkas-clj.svg[]
             [clojure.core.async :refer [timeout <!!] :include-macros true]))
 
 (defn- schema [id port]
-  {:node    "MYNODE-MACADDR"
+  {:node    "My-Node-Name"
    :address "127.0.0.1"
    :service {
-             :id      id
-             :service "my-service"
-             :address "127.0.0.1"
-             :port    port}
+             :id                  id
+             :name                id
+             :service             "my-service"
+             :address             "127.0.0.1"
+             :tags                ["primary"]
+             :enable_tag_override true
+             :port                port}
    })
 
 (def ^:private path "http://localhost:8500/v1/catalog/")
 
-(def ^:private s1 (service path (schema "my-service-1" 8888)))
+(def ^:private serv1 (service path (schema "my-service-1" 8888)))
 (def ^:private one-sec 1000)
 
 (defn run-my-service
-  (let [status (register s1)]
+  (let [status (register serv1)]
 
     (when status
       (<!! (timeout one-sec)))
 
     (assert (= (count (filter
                         #(= "my-service-1" (get % :ServiceID))
-                        (discover s1))) 1)))
-  (deregister s1)
+                        (discover serv1))) 1)))
+  (deregister serv1)
   (<!! (timeout one-sec)))
 ----
 
@@ -92,6 +95,6 @@ Enjoy!
 
 == License
 
-Copyright &copy; 2019 UPD Consulting
+Copyright &copy; 2019 UPDC (UPD Consutlting Ltd)
 
 Distributed under the MIT License.

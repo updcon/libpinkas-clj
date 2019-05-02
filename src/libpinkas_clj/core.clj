@@ -16,6 +16,7 @@
 (def ^:private ifsome? (partial +with some))
 
 (defprotocol Service
+  (describe [this])
   (discover [this])
   (register [this])
   (deregister [this]))
@@ -60,6 +61,12 @@
 (defn service [path info & ops]
 
   (reify Service
+    (describe [this]
+      {:info info
+       :hash (with-hash info [:service :id])
+       :path path
+       :ops  ops})
+
     (discover [this]
       (exec path (str "service/" (-> info :service :service)) (with-http)))
 
@@ -77,5 +84,5 @@
         added))
 
     (deregister [this]
-      (swap! reject-repo #(conj % (with-hash info [:service-id])))
+      (swap! reject-repo #(conj % (with-hash info [:service :id])))
       (exec path "deregister" (with-http (transform info))))))
