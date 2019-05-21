@@ -1,7 +1,8 @@
 (ns libpinkas-clj.core
   (:require [org.httpkit.client :as http]
-            [cheshire.core :as json]
+            [cheshire.core :refer [generate-string parse-string]]
             [clojure.string :as s]
+            [clojure.walk :refer [postwalk]]
             [clojure.core.async
              :refer [timeout go-loop <! >!]
              :include-macros true]))
@@ -22,7 +23,7 @@
   (deregister [this]))
 
 (defn- with-ctx [path loc]
-  (if (clojure.string/ends-with? path "/")
+  (if (s/ends-with? path "/")
     (str path loc)
     (str path "/" loc)))
 
@@ -32,7 +33,7 @@
     (s/join capitalwords)))
 
 (defn- transform [orig]
-  (clojure.walk/postwalk (fn [k] (if (keyword? k) (keyword->capital k) k))
+  (postwalk (fn [k] (if (keyword? k) (keyword->capital k) k))
                          orig))
 
 (defn- deref-with-default [ref]
@@ -44,7 +45,7 @@
   ([b]
    (fn [x] (http/request {:method :put
                           :url    x
-                          :body   (json/generate-string b)}))))
+                          :body   (generate-string b)}))))
 
 
 (def ^:private transform-http
@@ -57,7 +58,7 @@
                       deref-with-default)]
     (let [body (:body resp)]
       (when-not (empty? body)
-        (json/parse-string body true)))))
+        (parse-string body true)))))
 
 (defn- with-hash [val inner]
   (hash (get-in val inner)))
