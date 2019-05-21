@@ -9,6 +9,7 @@
 
 (defonce ^:private reject-repo (atom #{}))
 (defonce ^:private deref-timeout 2000)
+(defonce ^:private default-interval 10)
 
 (defn- +with [f hsh]
   (f hsh @reject-repo))
@@ -34,24 +35,24 @@
 
 (defn- transform [orig]
   (postwalk (fn [k] (if (keyword? k) (keyword->capital k) k))
-                         orig))
+            orig))
 
 (defn- deref-with-default [ref]
   (deref ref deref-timeout false))
 
 (defn- with-http
   ([]
-   (fn [x] (http/request {:url x})))
+   (fn [^String x] (http/request {:url x})))
   ([b]
-   (fn [x] (http/request {:method :put
-                          :url    x
-                          :body   (generate-string b)}))))
+   (fn [^String x] (http/request {:method :put
+                                  :url    x
+                                  :body   (generate-string b)}))))
 
 
 (def ^:private transform-http
   (comp with-http transform))
 
-(defn- exec [path loc m]
+(defn- exec [^String path ^String loc m]
   (when-let [resp (-> path
                       (with-ctx loc)
                       m
@@ -77,7 +78,7 @@
 
     (register [this]
       (let [hsh (with-hash info [:service :id])
-            {:keys [interval] :or {interval 10}} ops
+            {:keys [interval] :or {interval default-interval}} ops
             beat (fn [] (exec path "register" (transform-http info)))
             added (beat)]
         (swap! reject-repo (fn [_] (remove-> #(= hsh %))))
