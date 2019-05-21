@@ -46,6 +46,10 @@
                           :url    x
                           :body   (json/generate-string b)}))))
 
+
+(def ^:private transform-http
+  (comp with-http transform))
+
 (defn- exec [path loc m]
   (when-let [resp (-> path
                       (with-ctx loc)
@@ -73,7 +77,7 @@
     (register [this]
       (let [hsh (with-hash info [:service :id])
             {:keys [interval] :or {interval 10}} ops
-            beat (fn [] (exec path "register" (with-http (transform info))))
+            beat (fn [] (exec path "register" (transform-http info)))
             added (beat)]
         (swap! reject-repo (fn [_] (remove-> #(= hsh %))))
         (when added (go-loop []
@@ -85,4 +89,4 @@
 
     (deregister [this]
       (swap! reject-repo #(conj % (with-hash info [:service :id])))
-      (exec path "deregister" (with-http (transform info))))))
+      (exec path "deregister" (transform-http info)))))
