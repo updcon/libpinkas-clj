@@ -67,16 +67,16 @@
 (defn service [path info & ops]
 
   (reify Service
-    (describe [this]
+    (describe [_]
       {:info info
        :hash (with-hash info [:service :id])
        :path path
        :ops  ops})
 
-    (discover [this]
+    (discover [_]
       (exec path (str "service/" (-> info :service :service)) (with-http)))
 
-    (register [this]
+    (register [_]
       (let [hsh (with-hash info [:service :id])
             {:keys [interval] :or {interval default-interval}} ops
             beat (fn [] (exec path "register" (transform-http info)))
@@ -89,6 +89,6 @@
                         (recur))))
         added))
 
-    (deregister [this]
+    (deregister [_]
       (swap! reject-repo #(conj % (with-hash info [:service :id])))
       (exec path "deregister" (transform-http info)))))

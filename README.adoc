@@ -1,7 +1,7 @@
 = libpinkas-clj
 
 A Clojure library designed to support basic registry operations
-for microservices with HashiCorp Consul service.
+for microservices with Consul service by HashiCorp.
 
 Heavily inspired by clj-consul-catalog.
 
