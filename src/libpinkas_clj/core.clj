@@ -37,7 +37,7 @@
   (postwalk (fn [k] (if (keyword? k) (keyword->capital k) k))
             orig))
 
-(defn- deregister [orig]
+(defn- service-deregister [orig]
   (-> orig
       (select-keys [:node :address])
       (assoc :serviceid (-> orig :service :id))))
@@ -57,8 +57,8 @@
 (def ^:private transform-http
   (comp with-http transform))
 
-(def ^:private transform-deregister
-  (comp transform-http deregister))
+(def ^:private transform-with-deregister
+  (comp transform-http service-deregister))
 
 (defn- exec [^String path ^String loc m]
   (when-let [resp (-> path
@@ -99,4 +99,4 @@
 
     (deregister [_]
       (swap! reject-repo #(conj % (with-hash info [:service :id])))
-      (exec path "deregister" (transform-deregister info)))))
+      (exec path "deregister" (transform-with-deregister info)))))

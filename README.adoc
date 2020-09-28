@@ -12,7 +12,7 @@ image:https://img.shields.io/clojars/v/updcon/libpinkas-clj.svg[]
 .project.clj
 [source,clojure]
 ----
-[updcon/libpinkas-clj "0.0.4"]
+[updcon/libpinkas-clj "0.0.5"]
 ----
 
 .example.clj
@@ -59,14 +59,17 @@ image:https://img.shields.io/clojars/v/updcon/libpinkas-clj.svg[]
 
 [source, text]
 ----
-==> Consul agent running!
-           Version: 'v1.4.4'
-           Node ID: '7b50bf01-8e4c-8536-759c-85477ae59855'
+==> Starting Consul agent...
+           Version: '1.8.4'
+           Node ID: '25c675d4-ce4a-c35b-420f-d8ff12469a5f'
+         Node name: 'localhost.localdomain'
         Datacenter: 'dc1' (Segment: '<all>')
             Server: true (Bootstrap: false)
        Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, gRPC: 8502, DNS: 8600)
       Cluster Addr: 127.0.0.1 (LAN: 8301, WAN: 8302)
-           Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false
+           Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false, Auto-Encrypt-TLS: false
+           ..............
+==> Consul agent running!
 ----
 
 === Self tests
@@ -95,6 +98,6 @@ Enjoy!
 
 == License
 
-Copyright &copy; 2019 UPDC (UPD Consutlting Ltd)
+Copyright &copy; 2019-2020 UPDC (UPD Consutlting Ltd)
 
 Distributed under the MIT License.
